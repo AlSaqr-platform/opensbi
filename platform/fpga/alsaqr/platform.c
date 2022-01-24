@@ -11,23 +11,25 @@
 #include <sbi/sbi_const.h>
 #include <sbi/sbi_hart.h>
 #include <sbi/sbi_platform.h>
+#include <sbi/sbi_trap.h>
 #include <sbi_utils/fdt/fdt_helper.h>
 #include <sbi_utils/fdt/fdt_fixup.h>
 #include <sbi_utils/ipi/aclint_mswi.h>
 #include <sbi_utils/irqchip/plic.h>
 #include <sbi_utils/serial/uart8250.h>
 #include <sbi_utils/timer/aclint_mtimer.h>
+#include <libfdt.h>
 
 #define ARIANE_UART_ADDR			      0x40000000
-#define ARIANE_UART_FREQ			      30000000
+#define ARIANE_UART_FREQ			      50000000
 #define ARIANE_UART_BAUDRATE			  115200
 #define ARIANE_UART_REG_SHIFT			  2
 #define ARIANE_UART_REG_WIDTH			  4
 #define ARIANE_PLIC_ADDR			      0xc000000
-#define ARIANE_PLIC_NUM_SOURCES		  255
+#define ARIANE_PLIC_NUM_SOURCES		  60
 #define ARIANE_HART_COUNT			      1
 #define ARIANE_CLINT_ADDR			      0x2000000
-#define ARIANE_ACLINT_MTIMER_FREQ		1500000
+#define ARIANE_ACLINT_MTIMER_FREQ		2500000
 #define ARIANE_ACLINT_MSWI_ADDR			(ARIANE_CLINT_ADDR + \
 						 CLINT_MSWI_OFFSET)
 #define ARIANE_ACLINT_MTIMER_ADDR		(ARIANE_CLINT_ADDR + \
@@ -74,12 +76,18 @@ static int ariane_final_init(bool cold_boot)
 {
 	void *fdt;
 
+  int debugger_off;
+  
 	if (!cold_boot)
 		return 0;
 
 	fdt = fdt_get_address();
 	fdt_fixups(fdt);
 
+  debugger_off = fdt_node_offset_by_compatible(fdt,0,"riscv,debug-013");
+  if(debugger_off > 0)
+    fdt_del_node(fdt,debugger_off);
+  
 	return 0;
 }
 

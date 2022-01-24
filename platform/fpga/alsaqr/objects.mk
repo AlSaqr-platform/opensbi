@@ -5,4 +5,4 @@
 #		Panagiotis Peristerakis <perister@ics.forth.gr>
 #
 
-platform-objs-y += platform.o
+platform-objs-y += platform.o 

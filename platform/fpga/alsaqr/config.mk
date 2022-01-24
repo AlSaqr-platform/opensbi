@@ -21,7 +21,7 @@ FW_JUMP=n
 FW_PAYLOAD=y
 # This needs to be 2MB aligned for 64-bit support
 FW_PAYLOAD_OFFSET=0x200000
-# Let's put the dtb in the L2 spm for now
-FW_PAYLOAD_FDT_ADDR=0x1C000000
+# Let's put the dtb in the L3! 
+FW_PAYLOAD_FDT_ADDR=0x82200000
 FW_PAYLOAD_ALIGN=0x1000
 
