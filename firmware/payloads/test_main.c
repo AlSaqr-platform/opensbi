@@ -51,10 +51,62 @@ static inline void sbi_ecall_console_puts(const char *str)
 		__asm__ __volatile__("wfi" ::: "memory"); \
 	} while (0)
 
+
+#define read_csr(reg) ({ unsigned long __tmp;    \
+  asm volatile ("csrr %0, " #reg : "=r"(__tmp)); \
+  __tmp; })
+
+#define write_csr(reg, val) ({ \
+  asm volatile ("csrw " #reg ", %0" :: "rK"(val)); })
+
+char buffer[1024 * 1024];
+
+void sweep(int stride)
+{
+  long icachemiss, dcachemiss;
+  int max_j = 4 * 1024;
+  icachemiss = read_csr(0xc03);
+  dcachemiss = read_csr(0xc04);
+
+  for(int i = 0; i < 10; i++)
+  {
+    if(i == 1)
+    {
+      icachemiss = read_csr(0xc03);
+      dcachemiss = read_csr(0xc04);
+    }
+
+    for(int j = 0; j < max_j; j += 4)
+    {
+      buffer[(j + 0) * stride] = 0;
+      buffer[(j + 1) * stride] = 0;
+      buffer[(j + 2) * stride] = 0;
+      buffer[(j + 3) * stride] = 0;
+    }
+  }
+
+  icachemiss = icachemiss - read_csr(0xc03);
+  dcachemiss = dcachemiss - read_csr(0xc04);
+
+  if( (icachemiss==0) && (dcachemiss==0) )
+    sbi_ecall_console_puts("Both zeros\n");
+  else
+    sbi_ecall_console_puts("Not zeros\n");
+
+}
+
+
 void test_main(unsigned long a0, unsigned long a1)
 {
 	sbi_ecall_console_puts("\nTest payload running\n");
 
-	while (1)
+  sweep(0);
+  sweep(1);
+  sweep(2);
+  sweep(4);
+  sweep(8);
+  sweep(16);
+
+  while (1)
 		wfi();
 }
