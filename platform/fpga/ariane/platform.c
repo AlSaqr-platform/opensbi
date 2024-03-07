@@ -19,7 +19,7 @@
 #include <sbi_utils/timer/aclint_mtimer.h>
 
 #define ARIANE_UART_ADDR			0x10000000
-#define ARIANE_UART_FREQ			50000000
+#define ARIANE_UART_FREQ			40000000
 #define ARIANE_UART_BAUDRATE			115200
 #define ARIANE_UART_REG_SHIFT			2
 #define ARIANE_UART_REG_WIDTH			4
@@ -116,7 +116,36 @@ static int ariane_final_init(bool cold_boot)
 	fdt = fdt_get_address();
 	fdt_fixups(fdt);
 
-	return 0;
+  /* Enable perf tracking */
+	csr_write(CSR_MCOUNTEREN,-1);
+  csr_write(CSR_HCOUNTEREN,-1);
+  csr_write(CSR_SCOUNTEREN,-1);
+  csr_write(CSR_MCOUNTINHIBIT,0);
+  csr_write(CSR_MHPMEVENT3,1); // icache miss
+  csr_write(CSR_MHPMEVENT4,2); // dcache miss
+  csr_write(CSR_MHPMEVENT5,5); // load event
+  csr_write(CSR_MHPMEVENT6,6); // store event
+  csr_write(CSR_MHPMEVENT7,15); // if empty
+  csr_write(CSR_MHPMEVENT8,22); // stall
+
+  csr_write(CSR_MHPMEVENT9,23); // snoop read once
+  csr_write(CSR_MHPMEVENT10,24); // snoop read shared
+  csr_write(CSR_MHPMEVENT11,25); // snoop read clean
+  csr_write(CSR_MHPMEVENT12,26); // snoop read no shared
+  csr_write(CSR_MHPMEVENT13,27); // snoop read unique
+  csr_write(CSR_MHPMEVENT14,28); // snoop clean shared
+  csr_write(CSR_MHPMEVENT15,29); // snoop clean invalid
+  csr_write(CSR_MHPMEVENT16,30); // snoop clean unique
+  csr_write(CSR_MHPMEVENT17,31); // snoop make invalid
+  csr_write(CSR_MHPMEVENT18,32); // dc hit
+  csr_write(CSR_MHPMEVENT19,33); // dc write hit unique
+  csr_write(CSR_MHPMEVENT20,34); // dc write hit shared
+  csr_write(CSR_MHPMEVENT21,35); // dc write miss
+  csr_write(CSR_MHPMEVENT22,36); // dc clean invalid hit
+  csr_write(CSR_MHPMEVENT23,37); // dc clean invalid miss
+  csr_write(CSR_MHPMEVENT24,38); // dc flushing
+  
+  return 0;
 }
 
 /*
