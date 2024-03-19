@@ -16,7 +16,7 @@ ifndef NUM_HARTS
 endif
 
 ifeq ($(shell expr $(TARGET_FREQ) \>= 50000000), 1)
-  TARGET_BAUDRATE := 115200
+  TARGET_BAUDRATE := 76800
 else ifeq ($(shell expr $(TARGET_FREQ) \>= 40000000), 1)
 	TARGET_BAUDRATE := 38400
 else
