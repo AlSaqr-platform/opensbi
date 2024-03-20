@@ -17,6 +17,7 @@
 #include <sbi_utils/irqchip/plic.h>
 #include <sbi_utils/serial/uart8250.h>
 #include <sbi_utils/timer/aclint_mtimer.h>
+#include "perf_counters.h"
 
 #define ARIANE_UART_ADDR			0x10000000
 #define ARIANE_UART_FREQ			40000000
@@ -121,30 +122,30 @@ static int ariane_final_init(bool cold_boot)
   csr_write(CSR_HCOUNTEREN,-1);
   csr_write(CSR_SCOUNTEREN,-1);
   csr_write(CSR_MCOUNTINHIBIT,0);
-  csr_write(CSR_MHPMEVENT3,1); // icache miss
-  csr_write(CSR_MHPMEVENT4,2); // dcache miss
-  csr_write(CSR_MHPMEVENT5,5); // load event
-  csr_write(CSR_MHPMEVENT6,6); // store event
-  csr_write(CSR_MHPMEVENT7,15); // if empty
-  csr_write(CSR_MHPMEVENT8,22); // stall
+  csr_write(CSR_MHPMEVENT3,PERF_L1_ICACHE_MISS);
+  csr_write(CSR_MHPMEVENT4,PERF_L1_DCACHE_MISS);
+  csr_write(CSR_MHPMEVENT5,PERF_LOAD);
+  csr_write(CSR_MHPMEVENT6,PERF_STORE);
+  csr_write(CSR_MHPMEVENT7,PERF_IF_EMPTY);
+  csr_write(CSR_MHPMEVENT8,PERF_PIPELINE_STALL);
 
-  csr_write(CSR_MHPMEVENT9,23); // snoop read once
-  csr_write(CSR_MHPMEVENT10,24); // snoop read shared
-  csr_write(CSR_MHPMEVENT11,25); // snoop read clean
-  csr_write(CSR_MHPMEVENT12,26); // snoop read no shared
-  csr_write(CSR_MHPMEVENT13,27); // snoop read unique
-  csr_write(CSR_MHPMEVENT14,28); // snoop clean shared
-  csr_write(CSR_MHPMEVENT15,29); // snoop clean invalid
-  csr_write(CSR_MHPMEVENT16,30); // snoop clean unique
-  csr_write(CSR_MHPMEVENT17,31); // snoop make invalid
-  csr_write(CSR_MHPMEVENT18,32); // dc hit
-  csr_write(CSR_MHPMEVENT19,33); // dc write hit unique
-  csr_write(CSR_MHPMEVENT20,34); // dc write hit shared
-  csr_write(CSR_MHPMEVENT21,35); // dc write miss
-  csr_write(CSR_MHPMEVENT22,36); // dc clean invalid hit
-  csr_write(CSR_MHPMEVENT23,37); // dc clean invalid miss
-  csr_write(CSR_MHPMEVENT24,38); // dc flushing
-  
+  csr_write(CSR_MHPMEVENT9,PERF_IN_SNOOP_READ_ONCE);
+  csr_write(CSR_MHPMEVENT10,PERF_IN_SNOOP_READ_SHRD);
+  csr_write(CSR_MHPMEVENT11,PERF_IN_SNOOP_READ_CLEAN);
+  csr_write(CSR_MHPMEVENT12,PERF_IN_SNOOP_READ_NO_SD);
+  csr_write(CSR_MHPMEVENT13,PERF_IN_SNOOP_READ_UNIQ);
+  csr_write(CSR_MHPMEVENT14,PERF_IN_SNOOP_CLEAN_SHRD);
+  csr_write(CSR_MHPMEVENT15,PERF_IN_SNOOP_CLEAN_INVLD);
+  csr_write(CSR_MHPMEVENT16,PERF_IN_SNOOP_CLEAN_UNIQ);
+  csr_write(CSR_MHPMEVENT17,PERF_IN_SNOOP_MAKE_INVLD);
+  csr_write(CSR_MHPMEVENT18,PERF_OUT_SNOOP_READ_ONCE);
+  csr_write(CSR_MHPMEVENT19,PERF_OUT_SNOOP_READ_SHARED);
+  csr_write(CSR_MHPMEVENT20,PERF_OUT_SNOOP_READ_UNIQUE);
+  csr_write(CSR_MHPMEVENT21,PERF_OUT_SNOOP_READ_NSNOOP);
+  csr_write(CSR_MHPMEVENT22,PERF_OUT_SNOOP_CLEAN_UNIQ);
+  csr_write(CSR_MHPMEVENT23,PERF_OUT_SNOOP_WR_UNIQUE);
+  csr_write(CSR_MHPMEVENT24,PERF_OUT_SNOOP_WR_NOSNOOP);
+  csr_write(CSR_MHPMEVENT25,PERF_OUT_SNOOP_WRITE_BACK);
   return 0;
 }
 
