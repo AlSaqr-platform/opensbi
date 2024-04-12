@@ -20,14 +20,14 @@
 #include <libfdt.h>
 
 #define ARIANE_UART_ADDR            0x40000000
-#define ARIANE_UART_FREQ            TARGET_FREQ
-#define ARIANE_UART_BAUDRATE        TARGET_BAUDRATE
+#define ARIANE_UART_FREQ            50000000
+#define ARIANE_UART_BAUDRATE        115200
 #define ARIANE_UART_REG_SHIFT       2
 #define ARIANE_UART_REG_WIDTH      	4
 #define ARIANE_UART_REG_OFFSET      0
 #define ARIANE_PLIC_ADDR            0xc000000
 #define ARIANE_PLIC_NUM_SOURCES	    60
-#define ARIANE_HART_COUNT	          NUM_HARTS
+#define ARIANE_HART_COUNT	          1
 #define ARIANE_CLINT_ADDR	          0x2000000
 #define ARIANE_ACLINT_MTIMER_FREQ		1000000
 #define ARIANE_ACLINT_MSWI_ADDR			(ARIANE_CLINT_ADDR + \
