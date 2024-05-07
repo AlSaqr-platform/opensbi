@@ -28,6 +28,7 @@
 #include <sbi/sbi_timer.h>
 #include <sbi/sbi_tlb.h>
 #include <sbi/sbi_version.h>
+#include <sbi_utils/irqchip/imsic.h>
 
 #define BANNER                                              \
 	"   ____                    _____ ____ _____\n"     \
@@ -200,6 +201,8 @@ static void wait_for_coldboot(struct sbi_scratch *scratch, u32 hartid)
 
 	/* Set MSIE and MEIE bits to receive IPI */
 	csr_set(CSR_MIE, MIP_MSIP | MIP_MEIP);
+
+	imsic_local_irqchip_init();
 
 	/* Acquire coldboot lock */
 	spin_lock(&coldboot_lock);
