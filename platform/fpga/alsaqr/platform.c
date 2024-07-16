@@ -123,9 +123,9 @@ static int ariane_console_init(void)
 {
   /* Set UART MUX with hardcoded write */
   int * tmp;
-  tmp = (int *) 0x1a104074;
-  *tmp = 1;
   tmp = (int *) 0x1a10407c;
+  *tmp = 1;
+  tmp = (int *) 0x1a104084;
   *tmp = 1;
 	return uart8250_init(ARIANE_UART_ADDR,
 			     ARIANE_UART_FREQ,
