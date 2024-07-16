@@ -23,6 +23,14 @@ else
 	TARGET_BAUDRATE := 9600
 endif
 
+ifndef MEM_SIZE
+	ifdef USE_HYPER
+		MEM_SIZE := 0x2000000
+	else
+		MEM_SIZE := 0x20000000
+	endif
+endif
+
 platform-genflags-y += -DTARGET_FREQ=$(TARGET_FREQ) -DTARGET_BAUDRATE=$(TARGET_BAUDRATE) -DNUM_HARTS=$(NUM_HARTS)
 
 # Compiler flags
@@ -67,6 +75,6 @@ clean.dts:
 
 alsaqr.dts: clean.dts
 	cp $(platform_src_dir)/fdt_gen/alsaqr-template.dts $(platform_src_dir)/fdt_gen/alsaqr.dts
-	python3 $(platform_src_dir)/fdt_gen/dts_gen.py $(platform_src_dir)/fdt_gen/alsaqr.dts $(NUM_HARTS) $(TARGET_FREQ) $(HALF_FREQ) $(TARGET_BAUDRATE)
+	python3 $(platform_src_dir)/fdt_gen/dts_gen.py $(platform_src_dir)/fdt_gen/alsaqr.dts $(NUM_HARTS) $(TARGET_FREQ) $(HALF_FREQ) $(TARGET_BAUDRATE) $(MEM_SIZE)
 
 PHONY: clean.dts alsaqr.dts

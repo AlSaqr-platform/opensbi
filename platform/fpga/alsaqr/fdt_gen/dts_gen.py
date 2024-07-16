@@ -52,10 +52,10 @@ def replace_strings(file_path, old_string, new_string):
             print(line.replace(old_string, new_string), end='')
 
 if __name__ == "__main__":
-    if len(sys.argv) != 6:
-        print("Usage: python3 dts_gen.py <file-path> <num_harts> <target-freq> <half-freq> <target-baud>")
+    if len(sys.argv) != 7:
+        print("Usage: python3 dts_gen.py <file-path> <num_harts> <target-freq> <half-freq> <target-baud> <mem-size>")
         sys.exit(1)
-    
+
     # Extract command-line arguments
     file_path = sys.argv[1]
     num_harts = sys.argv[2]
@@ -84,3 +84,4 @@ if __name__ == "__main__":
     replace_strings(file_path,"targetfreq",sys.argv[3])
     replace_strings(file_path,"halffreq",sys.argv[4])
     replace_strings(file_path,"targetbaud",sys.argv[5])
+    replace_strings(file_path,"mem_size",sys.argv[6])
