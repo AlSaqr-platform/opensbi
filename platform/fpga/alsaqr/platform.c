@@ -92,27 +92,27 @@ static int ariane_final_init(bool cold_boot)
     fdt_del_node(fdt,debugger_off);
 
   /* Enable perf tracking*/
-  csr_write(CSR_MCOUNTEREN,-1);
-  csr_write(CSR_HCOUNTEREN,-1);
-  csr_write(CSR_SCOUNTEREN,-1);
-  csr_write(CSR_MCOUNTINHIBIT,0);
-  csr_write(CSR_MHPMEVENT3,1); // icache miss
-  csr_write(CSR_MHPMEVENT4,2); // dcache miss
-  csr_write(CSR_MHPMEVENT5,5); // load event
-  csr_write(CSR_MHPMEVENT6,6); // store event
-  csr_write(CSR_MHPMEVENT7,15); // if empty
-  csr_write(CSR_MHPMEVENT8,22); // stall
+//   csr_write(CSR_MCOUNTEREN,-1);
+//   csr_write(CSR_HCOUNTEREN,-1);
+//   csr_write(CSR_SCOUNTEREN,-1);
+//   csr_write(CSR_MCOUNTINHIBIT,0);
+//   csr_write(CSR_MHPMEVENT3,1); // icache miss
+//   csr_write(CSR_MHPMEVENT4,2); // dcache miss
+//   csr_write(CSR_MHPMEVENT5,5); // load event
+//   csr_write(CSR_MHPMEVENT6,6); // store event
+//   csr_write(CSR_MHPMEVENT7,15); // if empty
+//   csr_write(CSR_MHPMEVENT8,22); // stall
 
-  sbi_printf("CSR_MCOUNTEREN %ld\n", csr_read(CSR_MCOUNTEREN));
-  sbi_printf("CSR_HCOUNTEREN %ld\n", csr_read(CSR_HCOUNTEREN));
-  sbi_printf("CSR_SCOUNTEREN %ld\n", csr_read(CSR_SCOUNTEREN));
-  sbi_printf("CSR_MCOUNTINHI %ld\n", csr_read(CSR_MCOUNTINHIBIT));
-  sbi_printf("CSR_MHPMEVENT3 %ld\n", csr_read(CSR_MHPMEVENT3));
-  sbi_printf("CSR_MHPMEVENT4 %ld\n", csr_read(CSR_MHPMEVENT4));
-  sbi_printf("CSR_MHPMEVENT5 %ld\n", csr_read(CSR_MHPMEVENT5));
-  sbi_printf("CSR_MHPMEVENT6 %ld\n", csr_read(CSR_MHPMEVENT6));
-  sbi_printf("CSR_MHPMEVENT7 %ld\n", csr_read(CSR_MHPMEVENT7));
-  sbi_printf("CSR_MHPMEVENT8 %ld\n", csr_read(CSR_MHPMEVENT8));
+//   sbi_printf("CSR_MCOUNTEREN %ld\n", csr_read(CSR_MCOUNTEREN));
+//   sbi_printf("CSR_HCOUNTEREN %ld\n", csr_read(CSR_HCOUNTEREN));
+//   sbi_printf("CSR_SCOUNTEREN %ld\n", csr_read(CSR_SCOUNTEREN));
+//   sbi_printf("CSR_MCOUNTINHI %ld\n", csr_read(CSR_MCOUNTINHIBIT));
+//   sbi_printf("CSR_MHPMEVENT3 %ld\n", csr_read(CSR_MHPMEVENT3));
+//   sbi_printf("CSR_MHPMEVENT4 %ld\n", csr_read(CSR_MHPMEVENT4));
+//   sbi_printf("CSR_MHPMEVENT5 %ld\n", csr_read(CSR_MHPMEVENT5));
+//   sbi_printf("CSR_MHPMEVENT6 %ld\n", csr_read(CSR_MHPMEVENT6));
+//   sbi_printf("CSR_MHPMEVENT7 %ld\n", csr_read(CSR_MHPMEVENT7));
+//   sbi_printf("CSR_MHPMEVENT8 %ld\n", csr_read(CSR_MHPMEVENT8));
 	return 0;
 }
 
