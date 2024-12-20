@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: BSD-2-Clause
-
-config PLATFORM_ALSAQR_FPGA
+config PLATFORM_CULSANS_FPGA
 	bool
 	select FDT
 	select SERIAL_UART8250

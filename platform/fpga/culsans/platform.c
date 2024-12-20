@@ -3,7 +3,6 @@
  * Copyright (C) 2019 FORTH-ICS/CARV
  *				Panagiotis Peristerakis <perister@ics.forth.gr>
  */
-
 #include <sbi/riscv_asm.h>
 #include <sbi/riscv_encoding.h>
 #include <sbi/riscv_io.h>
@@ -19,39 +18,28 @@
 #include <sbi_utils/irqchip/imsic.h>
 #include <sbi_utils/serial/uart8250.h>
 #include <sbi_utils/timer/aclint_mtimer.h>
-#include <libfdt.h>
-
-#define ARIANE_UART_ADDR            0x40000000
-#define ARIANE_UART_FREQ            TARGET_FREQ
-#define ARIANE_UART_BAUDRATE        TARGET_BAUDRATE
-#define ARIANE_UART_REG_SHIFT       2
-#define ARIANE_UART_REG_WIDTH      	4
-#define ARIANE_UART_REG_OFFSET      0
-#define ARIANE_HART_COUNT	          NUM_HARTS
-#define ARIANE_CLINT_ADDR	          0x2000000
+#define ARIANE_UART_ADDR				0x10000000
+#define ARIANE_UART_FREQ				40000000
+#define ARIANE_UART_BAUDRATE			38400
+#define ARIANE_UART_REG_SHIFT			2
+#define ARIANE_UART_REG_WIDTH			4
+#define ARIANE_UART_REG_OFFSET			0
+#define ARIANE_HART_COUNT				2
+#define ARIANE_CLINT_ADDR				0x2000000
 #define ARIANE_ACLINT_MTIMER_FREQ		1000000
-#define ARIANE_ACLINT_MTIMER_ADDR		(ARIANE_CLINT_ADDR + \
-						 CLINT_MTIMER_OFFSET)
-
-#define read_csr(reg) ({ unsigned long __tmp;    \
-  asm volatile ("csrr %0, " #reg : "=r"(__tmp)); \
-  __tmp; })
-
+#define ARIANE_ACLINT_MSWI_ADDR			(ARIANE_CLINT_ADDR + CLINT_MSWI_OFFSET)
+#define ARIANE_ACLINT_MTIMER_ADDR		(ARIANE_CLINT_ADDR + CLINT_MTIMER_OFFSET)
 static bool platform_has_mlevel_imsic = false;
-
 static struct aclint_mtimer_data mtimer = {
 	.mtime_freq = ARIANE_ACLINT_MTIMER_FREQ,
-	.mtime_addr = ARIANE_ACLINT_MTIMER_ADDR +
-		      ACLINT_DEFAULT_MTIME_OFFSET,
+	.mtime_addr = ARIANE_ACLINT_MTIMER_ADDR + ACLINT_DEFAULT_MTIME_OFFSET,
 	.mtime_size = ACLINT_DEFAULT_MTIME_SIZE,
-	.mtimecmp_addr = ARIANE_ACLINT_MTIMER_ADDR +
-			 ACLINT_DEFAULT_MTIMECMP_OFFSET,
+	.mtimecmp_addr = ARIANE_ACLINT_MTIMER_ADDR + ACLINT_DEFAULT_MTIMECMP_OFFSET,
 	.mtimecmp_size = ACLINT_DEFAULT_MTIMECMP_SIZE,
 	.first_hartid = 0,
 	.hart_count = ARIANE_HART_COUNT,
 	.has_64bit_mmio = true,
 };
-
 /*
  * Ariane platform early initialization.
  */
@@ -60,61 +48,23 @@ static int ariane_early_init(bool cold_boot)
 	/* For now nothing to do. */
 	return 0;
 }
-
 /*
  * Ariane platform final initialization.
  */
 static int ariane_final_init(bool cold_boot)
 {
 	void *fdt;
-
-  int debugger_off;
 	if (!cold_boot)
 		return 0;
-
 	fdt = fdt_get_address();
 	fdt_fixups(fdt);
-
-  debugger_off = fdt_node_offset_by_compatible(fdt,0,"riscv,debug-013");
-  if(debugger_off > 0)
-    fdt_del_node(fdt,debugger_off);
-
-  /* Enable perf tracking*/
-//   csr_write(CSR_MCOUNTEREN,-1);
-//   csr_write(CSR_HCOUNTEREN,-1);
-//   csr_write(CSR_SCOUNTEREN,-1);
-//   csr_write(CSR_MCOUNTINHIBIT,0);
-//   csr_write(CSR_MHPMEVENT3,1); // icache miss
-//   csr_write(CSR_MHPMEVENT4,2); // dcache miss
-//   csr_write(CSR_MHPMEVENT5,5); // load event
-//   csr_write(CSR_MHPMEVENT6,6); // store event
-//   csr_write(CSR_MHPMEVENT7,15); // if empty
-//   csr_write(CSR_MHPMEVENT8,22); // stall
-
-//   sbi_printf("CSR_MCOUNTEREN %ld\n", csr_read(CSR_MCOUNTEREN));
-//   sbi_printf("CSR_HCOUNTEREN %ld\n", csr_read(CSR_HCOUNTEREN));
-//   sbi_printf("CSR_SCOUNTEREN %ld\n", csr_read(CSR_SCOUNTEREN));
-//   sbi_printf("CSR_MCOUNTINHI %ld\n", csr_read(CSR_MCOUNTINHIBIT));
-//   sbi_printf("CSR_MHPMEVENT3 %ld\n", csr_read(CSR_MHPMEVENT3));
-//   sbi_printf("CSR_MHPMEVENT4 %ld\n", csr_read(CSR_MHPMEVENT4));
-//   sbi_printf("CSR_MHPMEVENT5 %ld\n", csr_read(CSR_MHPMEVENT5));
-//   sbi_printf("CSR_MHPMEVENT6 %ld\n", csr_read(CSR_MHPMEVENT6));
-//   sbi_printf("CSR_MHPMEVENT7 %ld\n", csr_read(CSR_MHPMEVENT7));
-//   sbi_printf("CSR_MHPMEVENT8 %ld\n", csr_read(CSR_MHPMEVENT8));
 	return 0;
 }
-
 /*
  * Initialize the ariane console.
  */
 static int ariane_console_init(void)
 {
-  /* Set UART MUX with hardcoded write */
-  int * tmp;
-  tmp = (int *) 0x1a10407c;
-  *tmp = 1;
-  tmp = (int *) 0x1a104084;
-  *tmp = 1;
 	return uart8250_init(ARIANE_UART_ADDR,
 			     ARIANE_UART_FREQ,
 			     ARIANE_UART_BAUDRATE,
@@ -122,31 +72,28 @@ static int ariane_console_init(void)
 			     ARIANE_UART_REG_WIDTH,
 			     ARIANE_UART_REG_OFFSET);
 }
-
 /*
  * Initialize ariane timer for current HART.
  */
 static int ariane_timer_init(bool cold_boot)
 {
 	int ret;
-
 	if (cold_boot) {
 		ret = aclint_mtimer_cold_init(&mtimer, NULL);
 		if (ret)
 			return ret;
 	}
-
 	return aclint_mtimer_warm_init();
 }
-
 static int generic_nascent_init(void)
 {
 	void *fdt;
 	fdt = fdt_get_address();
 	platform_has_mlevel_imsic = fdt_check_imsic_mlevel(fdt);
-
+	
 	if (platform_has_mlevel_imsic)
 		imsic_local_irqchip_init();
+	
 	return 0;
 }
 /*
@@ -154,14 +101,13 @@ static int generic_nascent_init(void)
  */
 const struct sbi_platform_operations platform_ops = {
 	.nascent_init	= generic_nascent_init,
-	.early_init = ariane_early_init,
-	.final_init = ariane_final_init,
-	.console_init = ariane_console_init,
-	.irqchip_init = fdt_irqchip_init,
-	.ipi_init = fdt_ipi_init,
-	.timer_init = ariane_timer_init,
+	.early_init	 	= ariane_early_init,
+	.final_init 	= ariane_final_init,
+	.console_init 	= ariane_console_init,
+	.irqchip_init 	= fdt_irqchip_init,
+	.ipi_init 		= fdt_ipi_init,
+	.timer_init 	= ariane_timer_init,
 };
-
 const struct sbi_platform platform = {
 	.opensbi_version = OPENSBI_VERSION,
 	.platform_version = SBI_PLATFORM_VERSION(0x0, 0x01),
